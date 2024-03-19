@@ -27,7 +27,7 @@ const EnterLottery = () => {
     writeContract,
   } = useWriteContract();
 
-  const { isLoading, isSuccess } = useWaitForTransactionReceipt({
+  const { isLoading, isSuccess, isError } = useWaitForTransactionReceipt({
     hash,
   });
 
@@ -40,12 +40,9 @@ const EnterLottery = () => {
         .NEXT_PUBLIC_LOTTERY_CONTRACT_ADDRESS as `0x${string}`,
       abi,
       functionName: "enterRaffle",
-      value: parseEther("0.1"),
+      value: entranceFee,
     });
   };
-
-  console.log(writeContractError);
-  console.log(writeContractIsPending);
 
   // Inside your component
   useEffect(() => {
@@ -54,9 +51,14 @@ const EnterLottery = () => {
         theme: "dark",
         toastId: hash,
       });
-      queryClient.invalidateQueries();
     }
-  }, [isSuccess, hash, queryClient]);
+    if (isError && hash) {
+      toast.error("Transaction failed, please try again", {
+        theme: "dark",
+        toastId: hash,
+      });
+    }
+  }, [isSuccess, hash, isError]);
 
   useEffect(() => {
     if (isLoading && hash) {
@@ -92,9 +94,13 @@ const EnterLottery = () => {
     <div className="card bg-base-100 shadow-xl">
       <div className="card-body">
         <div className="flex flex-col gap-8 text-lg font-bold">
-          <div className="flex">
+          <div className="flex gap-10">
             <p className="">Entrance Fee:</p>
-            <p className={`${isPending && "skeleton w-14 animate-pulse"} h-6`}>
+            <p
+              className={`${
+                isPending && "skeleton w-14 animate-pulse"
+              } h-6 text-2xl `}
+            >
               {entranceFee !== undefined && formatEther(entranceFee)}{" "}
               <span className="text-xs">{symbol}</span>
             </p>

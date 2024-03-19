@@ -178,3 +178,23 @@ contract PerformUpkeep is Script {
         performUpkeep(mostRecentlyDeployed);
     }
 }
+
+contract SetEntranceFee is Script {
+    function setEntranceFee(
+        address mostRecentlyDeployed,
+        uint256 entranceFee
+    ) public {
+        vm.startBroadcast();
+        Raffle(payable(mostRecentlyDeployed)).setEntranceFee(entranceFee);
+        vm.stopBroadcast();
+    }
+
+    function run(uint256 entranceFee) external {
+        console.log("Getting most recent deployment");
+        address payable mostRecentlyDeployed = payable(
+            DevOpsTools.get_most_recent_deployment("Raffle", block.chainid)
+        );
+        console.log("mostRecentlyDeployed: ", mostRecentlyDeployed);
+        setEntranceFee(mostRecentlyDeployed, entranceFee);
+    }
+}

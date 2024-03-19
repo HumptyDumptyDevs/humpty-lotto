@@ -9,9 +9,11 @@ const Header = () => {
       <div className="flex-1 flex items-center">
         <Image className="h-16" src={Logo} alt="Humpty Dumpty Crypto" />
       </div>
-      <h1 className="flex-grow text-center uppercase font-extrabold leading-loose text-4xl">
-        Humpty Dumpty POLY Lotto
-      </h1>
+      <div className="flex-grow hidden lg:block">
+        <h1 className="text-center uppercase font-extrabold leading-loose text-4xl ">
+          Humpty Lotto
+        </h1>
+      </div>
       <div className="flex-1 flex items-center">
         <ConnectButton />
       </div>

@@ -83,6 +83,19 @@ contract RaffleTest is Test {
         assert(raffle.getRaffleState() == Raffle.RaffleState.IDLE);
     }
 
+    //UPDATE RAFFLE FEE
+
+    function testSetRaffleFeeCanWillFailIfNotOwner() public {
+        vm.expectRevert(Raffle.Raffle__NotOwner.selector);
+        raffle.setEntranceFee(100);
+    }
+
+    function testSetRaffleFeeCanCanBeCalledByOwner() public {
+        vm.prank(msg.sender);
+        raffle.setEntranceFee(100);
+        assert(raffle.getEntranceFee() == 100);
+    }
+
     //ENTER RAFFLE
 
     function testRaffleRevertsWhenYouDontPayEnough() public {

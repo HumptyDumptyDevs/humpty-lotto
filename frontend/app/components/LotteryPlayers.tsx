@@ -9,19 +9,14 @@ const LotteryPlayers = () => {
     functionName: "getPlayers",
   });
 
-  console.log(error);
-  console.log(isPending);
-
-  console.log(data);
-
   return (
-    <div className="flex">
+    <div className="flex justify-center">
       <div className="overflow-x-auto">
         <table className="table ">
           <thead>
             <tr>
-              <th></th>
-              <th>Players</th>
+              <th>#</th>
+              <th className="">Players</th>
             </tr>
           </thead>
           <tbody>

@@ -11,6 +11,8 @@ export const local = defineChain({
   },
 });
 
+console.log(polygonMumbai);
+
 export const config = createConfig({
   chains: [polygonMumbai, polygon, local],
   ssr: true,

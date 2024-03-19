@@ -133,19 +133,6 @@ export const abi = [
   },
   {
     type: "function",
-    name: "getLastTimeStamp",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     name: "getPlayer",
     inputs: [
       {
@@ -211,6 +198,32 @@ export const abi = [
         name: "",
         type: "uint64",
         internalType: "uint64",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "getTimeSinceOpen",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "getTimeStampWhenOpen",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
       },
     ],
     stateMutability: "view",
@@ -336,7 +349,7 @@ export const abi = [
         internalType: "enum Raffle.RaffleState",
       },
       {
-        name: "timeSinceLastRaffle",
+        name: "timeSinceOpen",
         type: "uint256",
         internalType: "uint256",
       },

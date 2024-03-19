@@ -1,25 +1,3 @@
-// Layout of Contract:
-// version
-// imports
-// errors
-// interfaces, libraries, contracts
-// Type declarations
-// State variables
-// Events
-// Modifiers
-// Functions
-
-// Layout of Functions:
-// constructor
-// receive function (if exists)
-// fallback function (if exists)
-// external
-// public
-// internal
-// private
-// internal & private view & pure functions
-// external & public view & pure functions
-
 //SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.18;
@@ -37,6 +15,7 @@ import {ConfirmedOwner} from "@chainlink/contracts/src/v0.8/shared/access/Confir
 contract Raffle is VRFConsumerBaseV2 {
     /** Errors */
 
+    error Raffle__NotOwner();
     error Raffel__NotEnoughETHSent();
     error Raffel__TransferFailed();
     error Raffle__RaffleNotOpen();
@@ -64,15 +43,16 @@ contract Raffle is VRFConsumerBaseV2 {
     uint16 private constant REQUEST_CONFIRMATIONS = 3;
     uint32 private constant NUM_WORDS = 1;
 
-    uint256 private immutable i_entranceFee;
     uint256 private immutable i_interval;
     bytes32 private immutable i_gasLane;
     uint64 private immutable i_subscriptionId;
     uint32 private immutable i_callbackGasLimit;
+    address private immutable i_owner;
 
     address payable[] private s_players;
     uint256 private s_timeStampWhenOpen;
     address private s_recentWinner;
+    uint256 private s_entranceFee;
     RaffleState private s_raffleState;
 
     /** Events */
@@ -80,6 +60,11 @@ contract Raffle is VRFConsumerBaseV2 {
     event EnteredRaffle(address indexed player);
     event PickedWinner(address indexed winner);
     event RequestedRaffleWinner(uint256 indexed requestId);
+
+    modifier onlyOwner() {
+        if (msg.sender != i_owner) revert Raffle__NotOwner();
+        _;
+    }
 
     constructor(
         uint256 entranceFee,
@@ -90,7 +75,8 @@ contract Raffle is VRFConsumerBaseV2 {
         uint32 callbackGasLimit
     ) VRFConsumerBaseV2(vrfCoordinator) {
         i_vrfCoordinator = VRFCoordinatorV2Interface(vrfCoordinator);
-        i_entranceFee = entranceFee;
+        i_owner = msg.sender;
+        s_entranceFee = entranceFee;
         i_interval = interval;
         i_gasLane = gasLane;
         i_subscriptionId = subscriptionId;
@@ -104,7 +90,7 @@ contract Raffle is VRFConsumerBaseV2 {
             revert Raffle__RaffleNotOpen();
         }
 
-        if (msg.value < i_entranceFee) {
+        if (msg.value < s_entranceFee) {
             revert Raffel__NotEnoughETHSent();
         }
 
@@ -186,10 +172,15 @@ contract Raffle is VRFConsumerBaseV2 {
         }
     }
 
+    //Allow owner to update the entrance fee
+    function setEntranceFee(uint256 entranceFee) external onlyOwner {
+        s_entranceFee = entranceFee;
+    }
+
     /** Getter Functions */
 
     function getEntranceFee() public view returns (uint256) {
-        return i_entranceFee;
+        return s_entranceFee;
     }
 
     function getInterval() public view returns (uint256) {
@@ -229,5 +220,9 @@ contract Raffle is VRFConsumerBaseV2 {
     }
     function getBalance() public view returns (uint256) {
         return address(this).balance;
+    }
+
+    function getTimeSinceOpen() public view returns (uint256) {
+        return block.timestamp - s_timeStampWhenOpen;
     }
 }

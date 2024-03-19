@@ -7,6 +7,7 @@ const LotteryBalance = () => {
   const balance = lotteryData?.balance;
   const symbol = lotteryData?.symbol;
   const isPending = lotteryData?.isPending;
+
   return (
     <div
       className={`${

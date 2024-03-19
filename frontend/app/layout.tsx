@@ -8,8 +8,8 @@ const inter = Inter({ subsets: ["latin"] });
 const raleway = Raleway({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Poly Lotto",
-  description: "Humpty Dumpty Poly Lotto",
+  title: "Humpty Lotto",
+  description: "Humpty Dumpty Crypto Lottery",
 };
 
 export default function RootLayout({

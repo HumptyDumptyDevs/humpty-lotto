@@ -1,6 +1,7 @@
 import React, { createContext, useContext, ReactNode } from "react";
-import { useReadContracts, useBalance } from "wagmi";
+import { useReadContracts, useBalance, useWatchContractEvent } from "wagmi";
 import { abi } from "../abi/abiRaffle";
+import { useQueryClient } from "@tanstack/react-query";
 import { Address } from "viem";
 
 // types/LotteryTypes.ts
@@ -11,8 +12,10 @@ export interface LotteryData {
   players?: readonly `0x${string}`[]; // Adjust types as necessary
   interval?: number; // Adjust types as necessary
   balance?: bigint; // Assuming balance is a string, adjust as necessary
+  recentWinner?: `0x${string}`;
   error?: any;
   symbol?: string;
+  timeSinceOpen?: number;
   isPending: boolean;
 }
 
@@ -29,6 +32,42 @@ export const LotteryProvider = ({ children }: LotteryProviderProps) => {
     address: process.env.NEXT_PUBLIC_LOTTERY_CONTRACT_ADDRESS as `0x${string}`,
     abi: abi,
   };
+
+  const queryClient = useQueryClient();
+
+  useWatchContractEvent({
+    ...lotteryContractConfig,
+    eventName: "EnteredRaffle",
+    onLogs(logs) {
+      queryClient.invalidateQueries();
+    },
+    onError(error) {
+      console.error("New Entry Error", error);
+    },
+  });
+
+  useWatchContractEvent({
+    ...lotteryContractConfig,
+    eventName: "RequestedRaffleWinner",
+    onLogs(logs) {
+      console.error("Requested Raffle Winner Logs", logs);
+      queryClient.invalidateQueries();
+    },
+    onError(error) {
+      console.error("Requested Raffle Winner Error", error);
+    },
+  });
+
+  useWatchContractEvent({
+    ...lotteryContractConfig,
+    eventName: "PickedWinner",
+    onLogs(logs) {
+      queryClient.invalidateQueries();
+    },
+    onError(error) {
+      console.error("Picked Winner Error", error);
+    },
+  });
 
   const {
     data: contractData,
@@ -56,6 +95,14 @@ export const LotteryProvider = ({ children }: LotteryProviderProps) => {
         ...lotteryContractConfig,
         functionName: "getBalance",
       },
+      {
+        ...lotteryContractConfig,
+        functionName: "getTimeSinceOpen",
+      },
+      {
+        ...lotteryContractConfig,
+        functionName: "getRecentWinner",
+      },
     ],
   });
 
@@ -68,8 +115,10 @@ export const LotteryProvider = ({ children }: LotteryProviderProps) => {
     entranceFee: contractData?.[0]?.result,
     raffleState: contractData?.[1]?.result,
     interval: Number(contractData?.[2]?.result),
-    players: contractData?.[3]?.result,
+    players: contractData?.[3]?.result || [],
     balance: contractData?.[4]?.result,
+    timeSinceOpen: Number(contractData?.[5]?.result),
+    recentWinner: contractData?.[6]?.result,
     symbol: balanceData?.symbol,
     error: contractsError,
     isPending: isContractsPending,
