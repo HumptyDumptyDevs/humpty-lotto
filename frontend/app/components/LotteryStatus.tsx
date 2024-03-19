@@ -4,7 +4,7 @@ import Countdown, { zeroPad } from "react-countdown";
 import { useRef } from "react";
 import gsap from "gsap";
 
-const LotteryStatus = () => {
+const LotteryStatus = ({ enterLotteryButtonRef }: any) => {
   const lotteryData = useLottery();
   const countdownRenderRef = React.useRef<HTMLDivElement>(null);
   const countdownComponentRef: any = useRef(null);
@@ -25,12 +25,14 @@ const LotteryStatus = () => {
   const interval = lotteryData?.interval ?? 0;
   const isPending = lotteryData?.isPending;
   const raffleStateRef = useRef(raffleState);
+  const recentWinnerRef = useRef(recentWinner);
   const [countdownCompleted, setCountdownCompleted] = useState(false);
   const [countdownKey, setCountdownKey] = useState(0);
   const [date, setDate] = useState(Date.now());
 
   const renderRaffleStatus = () => {
     if (raffleState === 1 && countdownCompleted) {
+      enterLotteryButtonRef.current.disabled = true;
       // Render a "pending closure" badge when countdown is completed but state is still 1
       return (
         <span className="badge badge-warning badge-lg">Pending Closure</span>
@@ -76,6 +78,10 @@ const LotteryStatus = () => {
     );
   };
 
+  useEffect(() => {
+    recentWinnerRef.current = recentWinner;
+  }, [recentWinner]);
+
   const showWinnerFlow = () => {
     const winnerContainerDiv = document.createElement("div");
     const winnerTextSpan = document.createElement("div");
@@ -83,7 +89,9 @@ const LotteryStatus = () => {
 
     winnerTextSpan.innerHTML = "Congratulations!";
     const winnerAddress =
-      recentWinner?.substring(0, 6) + "..." + recentWinner?.slice(-4);
+      recentWinnerRef.current?.substring(0, 6) +
+      "..." +
+      recentWinnerRef.current?.slice(-4);
     winnerAddressSpan.innerHTML = winnerAddress;
 
     winnerContainerDiv.classList.add(
@@ -230,7 +238,10 @@ const LotteryStatus = () => {
 
   useEffect(() => {
     raffleStateRef.current = raffleState;
-    if (raffleState === 2) {
+    if (raffleState === 0) {
+      enterLotteryButtonRef.current.disabled = false;
+    } else if (raffleState === 2) {
+      enterLotteryButtonRef.current.disabled = true;
       setCountdownCompleted(false);
       createCalculatingWinnerFlow();
     }

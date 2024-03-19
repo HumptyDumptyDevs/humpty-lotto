@@ -13,7 +13,7 @@ import { useLottery } from "../context/LotteryContext";
 import "react-toastify/dist/ReactToastify.css";
 import { useQueryClient } from "@tanstack/react-query";
 
-const EnterLottery = () => {
+const EnterLottery = ({ enterLotteryButtonRef }: any) => {
   const queryClient = useQueryClient();
   const lotteryData = useLottery();
   const entranceFee = lotteryData?.entranceFee;
@@ -32,9 +32,6 @@ const EnterLottery = () => {
   });
 
   const enterLottery = async () => {
-    console.log("Entering Lottery...");
-    console.log(process.env.NEXT_PUBLIC_LOTTERY_CONTRACT_ADDRESS);
-    console.log(abi);
     writeContract({
       address: process.env
         .NEXT_PUBLIC_LOTTERY_CONTRACT_ADDRESS as `0x${string}`,
@@ -74,7 +71,6 @@ const EnterLottery = () => {
               .writeText(hash)
               .then(() => {
                 // Optionally, you can provide feedback that the content was copied
-                console.log("Transaction hash copied to clipboard");
                 // Or even use another toast for confirmation, if desired
                 toast.success("Transaction hash copied to clipboard!", {
                   theme: "dark",
@@ -106,7 +102,11 @@ const EnterLottery = () => {
             </p>
           </div>
           <div className="flex justify-center">
-            <button onClick={enterLottery} className="btn  btn-primary">
+            <button
+              ref={enterLotteryButtonRef}
+              onClick={enterLottery}
+              className="btn  btn-primary"
+            >
               Buy Ticket
             </button>
           </div>

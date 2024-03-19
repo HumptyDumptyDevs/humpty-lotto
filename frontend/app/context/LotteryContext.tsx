@@ -50,7 +50,6 @@ export const LotteryProvider = ({ children }: LotteryProviderProps) => {
     ...lotteryContractConfig,
     eventName: "RequestedRaffleWinner",
     onLogs(logs) {
-      console.error("Requested Raffle Winner Logs", logs);
       queryClient.invalidateQueries();
     },
     onError(error) {
