@@ -27,6 +27,8 @@ contract HelperConfig is Script {
             activeNetworkConfig = getMainnetEthConfig();
         } else if (block.chainid == 421614) {
             activeNetworkConfig = getArbSepEthConfig();
+        } else if (block.chainid == 137) {
+            activeNetworkConfig = getPolyEthConfig();
         } else if (block.chainid == 80001) {
             activeNetworkConfig = getPolyMumEthConfig();
         } else {
@@ -88,6 +90,19 @@ contract HelperConfig is Script {
                 callbackGasLimit: 2500000,
                 link: 0x326C977E6efc84E512bB9C30f76E30c160eD06FB,
                 deployerKey: vm.envUint("PRIVATE_KEY")
+            });
+    }
+    function getPolyEthConfig() public view returns (NetworkConfig memory) {
+        return
+            NetworkConfig({
+                entranceFee: 0.01 ether,
+                interval: 30,
+                vrfCoordinator: 0xAE975071Be8F8eE67addBC1A82488F1C24858067,
+                gasLane: 0xcc294a196eeeb44da2888d17c0625cc88d70d9760a69d58d853ba6581a9ab0cd,
+                subscriptionId: 0,
+                callbackGasLimit: 2500000,
+                link: 0xb0897686c545045aFc77CF20eC7A532E3120E0F1,
+                deployerKey: vm.envUint("PRIVATE_KEY_HOT")
             });
     }
 

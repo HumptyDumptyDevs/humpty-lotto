@@ -49,7 +49,11 @@ ifeq ($(findstring --network arbsep,$(ARGS)),--network arbsep)
 endif
 
 ifeq ($(findstring --network polymum,$(ARGS)),--network polymum)
-	NETWORK_ARGS := --rpc-url $(POLY_MUM_RPC_URL) --account sepolia --broadcast --verify --etherscan-api-key $(ETHERSCAN_API_KEY) -vvvv
+	NETWORK_ARGS := --rpc-url $(POLY_MUM_RPC_URL) --account sepolia --broadcast 
+endif
+
+ifeq ($(findstring --network poly,$(ARGS)),--network poly)
+	NETWORK_ARGS := --rpc-url $(POLY_MAINNET_RPC_URL) --account hotwallet --broadcast -vvvv
 endif
 
 
@@ -61,8 +65,3 @@ deploy:
 # For deploying Interactions.s.sol:FundFundMe as well as for Interactions.s.sol:WithdrawFundMe we have to include a sender's address `--sender <ADDRESS>`
 SENDER_ADDRESS := <sender's address>
 
-fund:
-	@forge script script/Interactions.s.sol:FundFundMe --sender $(SENDER_ADDRESS) $(NETWORK_ARGS)
-
-withdraw:
-	@forge script script/Interactions.s.sol:WithdrawFundMe --sender $(SENDER_ADDRESS) $(NETWORK_ARGS)

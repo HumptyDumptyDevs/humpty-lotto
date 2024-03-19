@@ -52,7 +52,7 @@ contract CreateSubscription is Script {
 }
 
 contract FundSubscription is Script {
-    uint96 public constant FUND_AMOUNT = 5 ether;
+    uint96 public constant FUND_AMOUNT = 1.8 ether;
     uint256 public constant ANVIL_CHAIN_ID = 31337;
 
     function fundSubscriptionUsingConfig() public {
