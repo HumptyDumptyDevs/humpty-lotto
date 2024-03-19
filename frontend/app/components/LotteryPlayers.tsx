@@ -10,7 +10,7 @@ const LotteryPlayers = () => {
   });
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center md:justify-start">
       <div className="overflow-x-auto">
         <table className="table ">
           <thead>
